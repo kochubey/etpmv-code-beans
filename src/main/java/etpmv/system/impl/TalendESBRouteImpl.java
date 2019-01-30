@@ -15,7 +15,7 @@ public class TalendESBRouteImpl extends RouteBuilder implements TalendESBRoute {
     }
 
     public void setArguments(Object arguments) {
-       config.setArguments(arguments);
+        config.setArguments(arguments);
     }
 
     @Override
