@@ -5,13 +5,12 @@ package etpmv.system.exception;
 public class BaseEsbException extends Exception{
     private int code;
     private String details;
-    private String message;
 
     public BaseEsbException(int code, String message, String details) {
         this(message);
         this.code = code;
         this.details = details;
-        this.message = message;
+        String message1 = message;
     }
 
     private BaseEsbException(String message) {

@@ -6,8 +6,10 @@ import javax.activation.DataHandler;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 import static java.lang.System.lineSeparator;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.joining;
 
 public class Message {
@@ -22,7 +24,7 @@ public class Message {
         if (message instanceof DataHandler) {
             try (BufferedReader br = new BufferedReader(
                     new InputStreamReader(
-                            ((DataHandler) message).getInputStream(), "UTf-8")
+                            ((DataHandler) message).getInputStream(), UTF_8)
             )) {
                 text = br.lines().collect(joining(lineSeparator()));
             }

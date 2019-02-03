@@ -31,7 +31,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "urn://dts/shod/exchange/v1_1", name = "Status")
     public JAXBElement<StatusType> createStatus(StatusType value) {
-        return new JAXBElement<StatusType>(_Status_QNAME, StatusType.class, null, value);
+        return new JAXBElement<>(_Status_QNAME, StatusType.class, null, value);
     }
 
 }
