@@ -12,16 +12,7 @@ import java.io.IOException;
 
 public class MultipartProcessor {
 
-    private static MultipartProcessor multipartProcessor;
-
-    private MultipartProcessor() {}
-
-    public static MultipartProcessor getInstance() {
-        if (multipartProcessor==null) {
-            multipartProcessor = new MultipartProcessor();
-        }
-        return multipartProcessor;
-    }
+    public MultipartProcessor() {}
 
     public void convertBodyToMultipart(Exchange exchange, boolean withFile) throws IOException {
         String body = exchange.getIn().getBody(String.class);
@@ -32,9 +23,12 @@ public class MultipartProcessor {
         if (withFile) {
             String filePath = String.format("%1$s%2$s", "./data/tmp/files/", exchange.getIn().getHeader("EsbExchangeId",	String.class));
             File file = new File(filePath);
+            String fileName = exchange.getIn().getHeader("AttachmentName", String.class);
+            exchange.getIn().removeHeader("AttachmentName");
+            if (fileName==null) fileName = file.getName();
             if (file.isFile()) {
                 contentType = ContentType.create(ContentType.APPLICATION_OCTET_STREAM.getMimeType(),"UTF-8");
-                multipartEntityBuilder.addPart("AttachedField",	new FileBody(file, contentType, file.getName()));
+                multipartEntityBuilder.addPart("AttachedField",	new FileBody(file, contentType, fileName));
             }
         }
 

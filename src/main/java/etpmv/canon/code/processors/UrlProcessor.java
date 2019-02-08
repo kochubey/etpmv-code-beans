@@ -12,16 +12,8 @@ import static java.lang.String.format;
 
 
 public class UrlProcessor {
-    private static UrlProcessor urlProcessor;
 
-    private UrlProcessor() {}
-
-    public static UrlProcessor getInstance() {
-        if (urlProcessor==null) {
-            urlProcessor = new UrlProcessor();
-        }
-        return urlProcessor;
-    }
+    public UrlProcessor() {}
     
     public String getEndpointUrlForSubscriber(String datasourceUrl, String subscriberPtsId, String subscriberUrlPart) throws MalformedURLException {
         String subscribersUrl = format("%s%s", datasourceUrl, subscriberUrlPart);
