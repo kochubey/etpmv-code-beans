@@ -14,17 +14,19 @@ public class MultipartProcessor {
 
     public MultipartProcessor() {}
 
-    public void convertBodyToMultipart(Exchange exchange, boolean withFile) throws IOException {
+    public void marshal(Exchange exchange) throws IOException {
+        this.marshal(exchange, null, null);
+    }
+
+    public void marshal(Exchange exchange, String exchangeId, String fileName) throws IOException {
         String body = exchange.getIn().getBody(String.class);
 
         MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
         ContentType contentType;
 
-        if (withFile) {
-            String filePath = String.format("%1$s%2$s", "./data/tmp/files/", exchange.getIn().getHeader("EsbExchangeId",	String.class));
+        if (exchangeId!=null) {
+            String filePath = String.format("%1$s%2$s", "./data/tmp/files/", exchangeId);
             File file = new File(filePath);
-            String fileName = exchange.getIn().getHeader("AttachmentName", String.class);
-            exchange.getIn().removeHeader("AttachmentName");
             if (fileName==null) fileName = file.getName();
             if (file.isFile()) {
                 contentType = ContentType.create(ContentType.APPLICATION_OCTET_STREAM.getMimeType(),"UTF-8");
