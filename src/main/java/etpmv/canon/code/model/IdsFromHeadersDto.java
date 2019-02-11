@@ -2,7 +2,7 @@ package etpmv.canon.code.model;
 
 import org.apache.camel.Exchange;
 
-
+@Deprecated
 public class IdsFromHeadersDto {
 
     public static class Builder {
