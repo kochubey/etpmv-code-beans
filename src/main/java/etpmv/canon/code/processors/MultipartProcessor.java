@@ -1,6 +1,7 @@
 package etpmv.canon.code.processors;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.Message;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.entity.ContentType;
@@ -10,31 +11,56 @@ import org.apache.http.entity.mime.content.FileBody;
 import java.io.File;
 import java.io.IOException;
 
+import static java.lang.String.format;
+import static java.util.Optional.ofNullable;
+import static org.apache.http.entity.ContentType.create;
+
 public class MultipartProcessor {
 
-    public MultipartProcessor() {}
-
+    // todo marshal должен возвращать объект
     public void marshal(Exchange exchange) throws IOException {
-        this.marshal(exchange, null, null);
+        Message in = exchange.getIn();
+        String body = in.getBody(String.class);
+        String xExchangeId = in.getHeader("X-Exchange-Id", String.class);
+        String xAttachName = in.getHeader("X-Attach-Name", String.class);
+        String xMessageType = in.getHeader("X-Message-Type", String.class);
+
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create()
+                .addTextBody("MessageText", body, create(xMessageType, "UTF-8"));
+
+        if (xExchangeId != null) {
+            File file = new File(format("%1$s%2$s", "./data/tmp/files/", xExchangeId));
+            if (file.isFile()) {
+                builder.addPart("AttachedField", new FileBody(file
+                        , create(ContentType.APPLICATION_OCTET_STREAM.getMimeType(), "UTF-8")
+                        , ofNullable(xAttachName).orElse(file.getName()))
+                );
+            }
+        }
+
+        HttpEntity resultEntity = new BufferedHttpEntity(builder.build());
+        in.setHeader("Content-Type", resultEntity.getContentType().getValue());
+        in.setBody(resultEntity);
     }
 
+    @Deprecated
     public void marshal(Exchange exchange, String exchangeId, String fileName) throws IOException {
         String body = exchange.getIn().getBody(String.class);
 
         MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
         ContentType contentType;
 
-        if (exchangeId!=null) {
-            String filePath = String.format("%1$s%2$s", "./data/tmp/files/", exchangeId);
+        if (exchangeId != null) {
+            String filePath = format("%1$s%2$s", "./data/tmp/files/", exchangeId);
             File file = new File(filePath);
-            if (fileName==null) fileName = file.getName();
+            if (fileName == null) fileName = file.getName();
             if (file.isFile()) {
-                contentType = ContentType.create(ContentType.APPLICATION_OCTET_STREAM.getMimeType(),"UTF-8");
-                multipartEntityBuilder.addPart("AttachedField",	new FileBody(file, contentType, fileName));
+                contentType = create(ContentType.APPLICATION_OCTET_STREAM.getMimeType(), "UTF-8");
+                multipartEntityBuilder.addPart("AttachedField", new FileBody(file, contentType, fileName));
             }
         }
 
-        contentType = ContentType.create(exchange.getIn().getHeader("X-Message-Type", String.class),"UTF-8");
+        contentType = create(exchange.getIn().getHeader("X-Message-Type", String.class), "UTF-8");
         multipartEntityBuilder.addTextBody("MessageText", body, contentType);
 
         HttpEntity resultEntity = new BufferedHttpEntity(multipartEntityBuilder.build());

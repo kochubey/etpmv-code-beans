@@ -19,6 +19,7 @@ public class Data {
     private String version;
     private String requester;
     private String responser;
+    private List<String> subscribers;
 
     public Data(String issuer, String form, String version, String requester, String responser) {
         this.issuer = issuer;
@@ -62,12 +63,12 @@ public class Data {
         return version;
     }
 
-    private String path() {
+    public String path() {
         return String.format("/DSE/urn/pts/%s/dts/%s/%s/body.xsd", issuer, form, version);
     }
 
     public boolean isReleasedOn(String url) throws IOException {
-        HttpURLConnection con = (HttpURLConnection) new URL(url + path()).openConnection();
+        HttpURLConnection con = (HttpURLConnection) new URL(url + path() + "/body.xsd").openConnection();
         con.setRequestMethod("HEAD");
         int responseCode = con.getResponseCode();
         con.disconnect();
@@ -75,7 +76,7 @@ public class Data {
     }
 
     public List<String> subscribersOn(String url) {
-        return new UrlProcessor().getListFromJsonByUrl(
+        return this.subscribers = new UrlProcessor().getListFromJsonByUrl(
                 format("%s/api/subscribersList?ptsId=%s&dtsId=%s&version=%s",
                         url, issuer, form, version));
     }
