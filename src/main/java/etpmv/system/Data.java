@@ -1,19 +1,15 @@
 package etpmv.system;
 
-import etpmv.canon.code.exceptions.DuplicateTransactionException;
-import etpmv.canon.code.exceptions.TransactionTimeoutException;
 import etpmv.canon.code.processors.UrlProcessor;
 import org.apache.camel.Exchange;
-import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 
+import static etpmv.system.Headers.*;
 import static java.lang.String.format;
-import static java.net.HttpURLConnection.HTTP_CONFLICT;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.util.Optional.ofNullable;
 
@@ -23,7 +19,6 @@ public class Data {
     private String version;
     private String requester;
     private String responser;
-    private List<String> subscribers;
 
     public Data(String issuer, String form, String version, String requester, String responser) {
         this.issuer = issuer;
@@ -35,15 +30,15 @@ public class Data {
 
     public Data(Exchange exchange) {
         this(
-                ofNullable(exchange.getIn().getHeader("X-Data-Source", String.class)).orElse("")
+                ofNullable(exchange.getIn().getHeader(DATA_SOURCE, String.class)).orElse("")
                         .replaceAll("^urn://dts/(.*)/(.*)/(.*)$", "$1"),
-                ofNullable(exchange.getIn().getHeader("X-Data-Source", String.class)).orElse("")
+                ofNullable(exchange.getIn().getHeader(DATA_SOURCE, String.class)).orElse("")
                         .replaceAll("^urn://dts/(.*)/(.*)/(.*)$", "$2"),
-                ofNullable(exchange.getIn().getHeader("X-Data-Source", String.class)).orElse("")
+                ofNullable(exchange.getIn().getHeader(DATA_SOURCE, String.class)).orElse("")
                         .replaceAll("^urn://dts/(.*)/(.*)/(.*)$", "$3"),
-                ofNullable(exchange.getIn().getHeader("X-Request-Id", String.class)).orElse("")
+                ofNullable(exchange.getIn().getHeader(REQUEST_ID, String.class)).orElse("")
                         .replaceAll("^urn:pts:(.*):(.*)$", "$1"),
-                ofNullable(exchange.getIn().getHeader("X-Response-Id", String.class)).orElse("")
+                ofNullable(exchange.getIn().getHeader(RESPONSE_ID, String.class)).orElse("")
                         .replaceAll("^urn:pts:(.*):(.*)$", "$1"));
     }
 
@@ -67,7 +62,7 @@ public class Data {
         return version;
     }
 
-    public String path() {
+    private String path() {
         return String.format("/DSE/urn/pts/%s/dts/%s/%s/body.xsd", issuer, form, version);
     }
 
@@ -80,7 +75,7 @@ public class Data {
     }
 
     public List<String> subscribersOn(String url) {
-        return this.subscribers = UrlProcessor.getInstance().getListFromJsonByUrl(
+        return new UrlProcessor().getListFromJsonByUrl(
                 format("%s/api/subscribersList?ptsId=%s&dtsId=%s&version=%s",
                         url, issuer, form, version));
     }

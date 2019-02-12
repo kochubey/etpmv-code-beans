@@ -29,16 +29,16 @@ public class UrlProcessor {
         return format("%s%s", datasourceUrl, subscriberUrlPart);
     }
 
-    public List getListFromJsonByUrl(String url) {
+    public List<String> getListFromJsonByUrl(String url) {
         URL urlObj;
-        List listFromJson = new ArrayList(0);
+        List<String> listFromJson = new ArrayList<>(0);
         try {
             urlObj = new URL(url);
         }catch (MalformedURLException e) {
             return listFromJson;
         }
         try{
-            listFromJson = new Gson().fromJson(IOUtils.toString(urlObj, "UTF-8"), List.class);
+            listFromJson =  new Gson().<List<String>>fromJson(IOUtils.toString(urlObj, "UTF-8"), List.class);
         } catch (IOException e) {
            return listFromJson;
         }
