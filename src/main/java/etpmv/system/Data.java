@@ -80,4 +80,34 @@ public class Data {
                 format("%s/api/subscribersList?ptsId=%s&dtsId=%s&version=%s",
                         url, issuer, form, version));
     }
+
+    public String xsltUrlForMarshal(String webConfigUrl) {
+        boolean isRequestToSource = issuer.equals(requester) && responser.isEmpty();
+        boolean isBroadcastResponse = issuer.equals(requester) && !responser.isEmpty();
+
+        String xsltFileName = (isRequestToSource || isBroadcastResponse) ? "sub.vs.xslt" : null;
+        if (xsltFileName==null) return null;
+
+        // определение ПТС, у которой брать xslt
+        String subscriberPtsId = isRequestToSource ? requester : responser;
+        return xsltUrl(webConfigUrl, subscriberPtsId, xsltFileName);
+    }
+
+    public String xsltUrlForUnmarshal(String webConfigUrl, String requestId, String endpointPtsKey) {
+        boolean isResponseFromSource =  !issuer.equals(requester) && !responser.isEmpty();
+        boolean isBroadcastRequest = issuer.equals(requester) && responser.isEmpty();
+        boolean isRequestToSubFromShod = requestId.startsWith("urn:pts:shod:sub-") && responser.isEmpty();
+
+        String xsltFileName = (isBroadcastRequest || isResponseFromSource || isRequestToSubFromShod)  ? "vs.sub.xslt" : null;
+       if (xsltFileName==null) return null;
+
+        // определение ПТС, у которой брать xslt
+        String subscriberPtsId = (isBroadcastRequest || isRequestToSubFromShod) ? endpointPtsKey : requester;
+
+        return xsltUrl(webConfigUrl, subscriberPtsId, xsltFileName);
+    }
+
+    private String xsltUrl(String webConfigUrl, String subscriberPtsId, String xsltFileName) {
+        return format("%s%s/dts/%s/%s/subscribers/%s/%s", webConfigUrl, issuer, form, version, subscriberPtsId, xsltFileName);
+    }
 }
