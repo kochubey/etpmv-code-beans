@@ -72,7 +72,7 @@ public class Data {
     }
 
     public boolean isReleasedOn(String url) throws IOException {
-        HttpURLConnection con = (HttpURLConnection) new URL(url + path()).openConnection();
+        HttpURLConnection con = (HttpURLConnection) new URL(url + path() + "/body.xsd").openConnection();
         con.setRequestMethod("HEAD");
         int responseCode = con.getResponseCode();
         con.disconnect();
@@ -80,7 +80,7 @@ public class Data {
     }
 
     public List<String> subscribersOn(String url) {
-        return this.subscribers = UrlProcessor.getInstance().getListFromJsonByUrl(
+        return this.subscribers = new UrlProcessor().getListFromJsonByUrl(
                 format("%s/api/subscribersList?ptsId=%s&dtsId=%s&version=%s",
                         url, issuer, form, version));
     }
