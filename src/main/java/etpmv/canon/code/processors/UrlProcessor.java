@@ -19,12 +19,20 @@ public class UrlProcessor {
     private final String regex = "^(.*)/DSE/urn/pts/(.*)/dts/(.*)/(.*)/subscribers/(.*)/endpoint";
     private final String iss_point = "%s/DSE/urn/pts/%s/endpoint";
     private final String sub_point = "%s/DSE/urn/pts/%s/dts/%s/%s/subscribers/%s/endpoint";
+    private final String all_subs = "%s/api/subscribersList?ptsId=%s&dtsId=%s&version=%s";
 
     private String host;
     private String issuer;
     private String form;
     private String version;
     private String subscriber;
+    private List<String> subscribers;
+
+    public static void main(String[] args) throws MalformedURLException {
+        UrlProcessor processor = new UrlProcessor("http://localhost:8080/");
+        System.out.println(processor.getIssuerPath());
+        System.out.println(processor.getIssuerEndpoint());
+    }
 
     public UrlProcessor(String host, String issuer, String form, String version, String subscriber) {
         this.host = host;
@@ -32,6 +40,7 @@ public class UrlProcessor {
         this.form = form;
         this.version = version;
         this.subscriber = subscriber;
+        this.subscribers = new ArrayList<>();
     }
 
     public UrlProcessor(String host, Data data) {
@@ -44,10 +53,10 @@ public class UrlProcessor {
 
     public UrlProcessor(String url) {
         this.host = url.replaceAll(regex, "$1");
-        this.issuer = url.replaceAll(regex, "$2");
-        this.form = url.replaceAll(regex, "$3");
-        this.version = url.replaceAll(regex, "$4");
-        this.subscriber = url.replaceAll(regex, "$5");
+        this.issuer = url.replaceAll(regex, "$2").replace(url,"");
+        this.form = url.replaceAll(regex, "$3").replace(url,"");
+        this.version = url.replaceAll(regex, "$4").replace(url,"");
+        this.subscriber = url.replaceAll(regex, "$5").replace(url,"");
     }
 
     @Deprecated
@@ -67,6 +76,11 @@ public class UrlProcessor {
         }
     }
 
+    public List<String> subscribers(){
+            return this.subscribers = (subscribers.size() > 0) ? subscribers :
+                    getListFromJsonByUrl($(all_subs, host, issuer, form, version));
+    }
+
     public String getIssuerPath() throws MalformedURLException {
         return $(iss_point, host, issuer);
     }
@@ -81,6 +95,26 @@ public class UrlProcessor {
 
     public String getSubscriberEndpoint() throws MalformedURLException {
         return url$(getSubscriberPath());
+    }
+
+    public List<String> getListFromJsonByUrl(String url) {
+        URL urlObj;
+        List<String> listFromJson = new ArrayList<>(0);
+        try {
+            urlObj = new URL(url);
+        } catch (MalformedURLException e) {
+            return listFromJson;
+        }
+        try {
+            listFromJson = new Gson().fromJson(IOUtils.toString(urlObj, "UTF-8"), List.class);
+//=======
+//        try{
+//            listFromJson =  new Gson().<List<String>>fromJson(IOUtils.toString(urlObj, "UTF-8"), List.class);
+//>>>>>>> cb0386c1cf0efba4bca752104a516d52b71f46b6
+        } catch (IOException e) {
+            return listFromJson;
+        }
+        return listFromJson;
     }
 
     @Deprecated
@@ -106,25 +140,5 @@ public class UrlProcessor {
     @Deprecated
     public String getSubscribersUrl(String datasourceUrl, String subscriberUrlPart) {
         return format("%s%s", datasourceUrl, subscriberUrlPart);
-    }
-
-    public List<String> getListFromJsonByUrl(String url) {
-        URL urlObj;
-        List<String> listFromJson = new ArrayList<>(0);
-        try {
-            urlObj = new URL(url);
-        } catch (MalformedURLException e) {
-            return listFromJson;
-        }
-        try {
-            listFromJson = new Gson().fromJson(IOUtils.toString(urlObj, "UTF-8"), List.class);
-//=======
-//        try{
-//            listFromJson =  new Gson().<List<String>>fromJson(IOUtils.toString(urlObj, "UTF-8"), List.class);
-//>>>>>>> cb0386c1cf0efba4bca752104a516d52b71f46b6
-        } catch (IOException e) {
-            return listFromJson;
-        }
-        return listFromJson;
     }
 }

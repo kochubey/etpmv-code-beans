@@ -67,6 +67,7 @@ public class Data {
         return $("%s/%s", first, path());
     }
 
+    @Deprecated
     public List<String> subscribersOn(String url) {
         return this.subscribers = (subscribers.size() == 0) ? new UrlProcessor().getListFromJsonByUrl(
                 $("%s/api/subscribersList?ptsId=%s&dtsId=%s&version=%s",
@@ -96,7 +97,6 @@ public class Data {
     public boolean isResponse() {
         return !requester.isEmpty() && !responser.isEmpty() && !issuer.equals(requester);
     }
-
 
     public boolean isReleasedOn(String url) throws IOException {
         HttpURLConnection con = (HttpURLConnection) new URL(pathOn(url) + "/body.xsd").openConnection();
