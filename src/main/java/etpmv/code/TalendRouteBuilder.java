@@ -12,7 +12,13 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.util.Collection;
 
+import static java.lang.String.format;
+
 public abstract class TalendRouteBuilder extends RouteBuilder {
+
+    public String $(String format, Object... args) {
+        return format(format, args);
+    }
 
     @Override
     public void configure() {
@@ -51,5 +57,6 @@ public abstract class TalendRouteBuilder extends RouteBuilder {
 
         main.run();
     }
+
 
 }
