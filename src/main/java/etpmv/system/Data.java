@@ -19,6 +19,7 @@ public class Data {
     private String version;
     private String requester;
     private String responser;
+    private String subscriber;
     private List<String> subscribers;
 
     public Data(Exchange exchange) {
@@ -59,8 +60,12 @@ public class Data {
         return version;
     }
 
+    public String subscriber() {
+        return subscriber;
+    }
+
     public String path() {
-        return $("/DSE/urn/pts/%s/dts/%s/%s", issuer, form, version);
+        return $("/DSE/urn/pts/%s/dts/%s/%s/", issuer, form, version);
     }
 
     public String pathOn(String first) {
@@ -106,6 +111,20 @@ public class Data {
         return (responseCode == HTTP_OK);
     }
 
+    public String unmarshal(String webConfigUrl, String requestId, String endpointPtsKey) {
+        boolean isResponseFromSource =  !issuer.equals(requester) && !responser.isEmpty();
+        boolean isBroadcastRequest = issuer.equals(requester) && responser.isEmpty();
+        boolean isRequestToSubFromShod = requestId.startsWith("urn:pts:shod:sub-") && responser.isEmpty();
+
+        String xsltFileName = (isBroadcastRequest || isResponseFromSource || isRequestToSubFromShod)  ? "vs.sub.xslt" : null;
+        if (xsltFileName==null) return null;
+
+        // определение ПТС, у которой брать xslt
+        String subscriberPtsId = (isBroadcastRequest || isRequestToSubFromShod) ? endpointPtsKey : requester;
+
+        return xsltUrl(webConfigUrl, subscriberPtsId, xsltFileName);
+    }
+
     @Deprecated
     public String getForm() {
         return form;
@@ -143,6 +162,7 @@ public class Data {
         return xsltUrl(webConfigUrl, subscriberPtsId, xsltFileName);
     }
 
+    @Deprecated
     public String xsltUrlForUnmarshal(String webConfigUrl, String requestId, String endpointPtsKey) {
         boolean isResponseFromSource =  !issuer.equals(requester) && !responser.isEmpty();
         boolean isBroadcastRequest = issuer.equals(requester) && responser.isEmpty();
@@ -158,6 +178,6 @@ public class Data {
     }
 
     private String xsltUrl(String webConfigUrl, String subscriberPtsId, String xsltFileName) {
-        return format("%s%s/dts/%s/%s/subscribers/%s/%s", webConfigUrl, issuer, form, version, subscriberPtsId, xsltFileName);
+        return $("%s%s/dts/%s/%s/subscribers/%s/%s", webConfigUrl, issuer, form, version, subscriberPtsId, xsltFileName);
     }
 }

@@ -26,7 +26,7 @@ public abstract class TalendRouteBuilder extends RouteBuilder {
 //        configRegistry(registry);
     }
 
-    public void doConfig() {
+    public void doConfig() throws Exception {
 //        final CamelContext camelContext = getContext();
 //
 //        CompositeRegistry compositeRegistry = new CompositeRegistry();
