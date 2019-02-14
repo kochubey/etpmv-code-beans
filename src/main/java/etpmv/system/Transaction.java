@@ -75,8 +75,4 @@ public class Transaction {
         }
         return listFromJson;
     }
-
-    public Transformer unpacker() {
-        return new Transformer(data);
-    }
 }

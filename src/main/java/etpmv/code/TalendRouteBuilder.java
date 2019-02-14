@@ -21,7 +21,7 @@ public abstract class TalendRouteBuilder extends RouteBuilder {
     }
 
     @Override
-    public void configure() {
+    public void configure() throws Exception {
         doConfig();
 //        configRegistry(registry);
     }

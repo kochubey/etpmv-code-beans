@@ -90,7 +90,7 @@ public class UrlProcessor {
     }
 
     public String getSubscriberPath() throws MalformedURLException {
-        return $(iss_point, host, issuer, form, version, subscriber);
+        return $(sub_point, host, issuer, form, version, subscriber);
     }
 
     public String getSubscriberEndpoint() throws MalformedURLException {
