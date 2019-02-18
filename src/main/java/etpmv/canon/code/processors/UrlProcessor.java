@@ -28,7 +28,7 @@ public class UrlProcessor {
     private String subscriber;
     private List<String> subscribers;
 
-    public static void main(String[] args) throws MalformedURLException {
+    public static void main(String[] args) {
         UrlProcessor processor = new UrlProcessor("http://localhost:8080/");
         System.out.println(processor.getIssuerPath());
         System.out.println(processor.getIssuerEndpoint());
@@ -59,11 +59,6 @@ public class UrlProcessor {
         this.subscriber = url.replaceAll(regex, "$5").replace(url,"");
     }
 
-    @Deprecated
-    public UrlProcessor() {
-        this("127.0.0.1:9090");
-    }
-
     private String $(String format, Object... args) {
         return format(format, args);
     }
@@ -81,19 +76,19 @@ public class UrlProcessor {
                     getListFromJsonByUrl($(all_subs, host, issuer, form, version));
     }
 
-    public String getIssuerPath() throws MalformedURLException {
+    public String getIssuerPath() {
         return $(iss_point, host, issuer);
     }
 
-    public String getIssuerEndpoint() throws MalformedURLException {
+    public String getIssuerEndpoint() {
         return url$(getIssuerPath());
     }
 
-    public String getSubscriberPath() throws MalformedURLException {
+    public String getSubscriberPath() {
         return $(sub_point, host, issuer, form, version, subscriber);
     }
 
-    public String getSubscriberEndpoint() throws MalformedURLException {
+    public String getSubscriberEndpoint() {
         return url$(getSubscriberPath());
     }
 
@@ -106,39 +101,10 @@ public class UrlProcessor {
             return listFromJson;
         }
         try {
-            listFromJson = new Gson().fromJson(IOUtils.toString(urlObj, "UTF-8"), List.class);
-//=======
-//        try{
-//            listFromJson =  new Gson().<List<String>>fromJson(IOUtils.toString(urlObj, "UTF-8"), List.class);
-//>>>>>>> cb0386c1cf0efba4bca752104a516d52b71f46b6
+            listFromJson = new Gson().<List<String>>fromJson(IOUtils.toString(urlObj, "UTF-8"), List.class);
         } catch (IOException e) {
             return listFromJson;
         }
         return listFromJson;
-    }
-
-    @Deprecated
-    public String getSubscriberEndpoint(String datasourceUrl, String subscriberPtsId, String subscriberUrlPart) throws MalformedURLException {
-        String subscribersUrl = format("%s%s", datasourceUrl, subscriberUrlPart);
-        URL url = new URL(format("%s/%s%s", subscribersUrl, subscriberPtsId, subscriberUrlPart));
-        try {
-            return IOUtils.toString(url, "UTF-8");
-        } catch (IOException e) {
-            return "";
-        }
-    }
-
-    @Deprecated
-    public String getIssuerEndpoint(String datasourceUrl) throws MalformedURLException {
-        try {
-            return IOUtils.toString(new URL(format("%s/endpoint", datasourceUrl)), "UTF-8");
-        } catch (IOException e) {
-            return "";
-        }
-    }
-
-    @Deprecated
-    public String getSubscribersUrl(String datasourceUrl, String subscriberUrlPart) {
-        return format("%s%s", datasourceUrl, subscriberUrlPart);
     }
 }

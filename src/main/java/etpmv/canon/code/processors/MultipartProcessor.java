@@ -42,29 +42,4 @@ public class MultipartProcessor {
         in.setHeader("Content-Type", resultEntity.getContentType().getValue());
         in.setBody(resultEntity);
     }
-
-    @Deprecated
-    public void marshal(Exchange exchange, String exchangeId, String fileName) throws IOException {
-        String body = exchange.getIn().getBody(String.class);
-
-        MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
-        ContentType contentType;
-
-        if (exchangeId != null) {
-            String filePath = format("%1$s%2$s", "./data/tmp/files/", exchangeId);
-            File file = new File(filePath);
-            if (fileName == null) fileName = file.getName();
-            if (file.isFile()) {
-                contentType = create(ContentType.APPLICATION_OCTET_STREAM.getMimeType(), "UTF-8");
-                multipartEntityBuilder.addPart("AttachedField", new FileBody(file, contentType, fileName));
-            }
-        }
-
-        contentType = create(exchange.getIn().getHeader("X-Message-Type", String.class), "UTF-8");
-        multipartEntityBuilder.addTextBody("MessageText", body, contentType);
-
-        HttpEntity resultEntity = new BufferedHttpEntity(multipartEntityBuilder.build());
-        exchange.getIn().setHeader("Content-Type", resultEntity.getContentType().getValue());
-        exchange.getIn().setBody(resultEntity);
-    }
 }

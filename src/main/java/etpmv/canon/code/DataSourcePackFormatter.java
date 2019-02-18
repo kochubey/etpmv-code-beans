@@ -4,9 +4,6 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.spi.ExchangeFormatter;
 
-import java.util.Optional;
-
-import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static java.util.Optional.ofNullable;
 import static java.util.UUID.randomUUID;
@@ -14,15 +11,13 @@ import static java.util.UUID.randomUUID;
 public class DataSourcePackFormatter implements ExchangeFormatter {
 
     private Boolean showBody;
-    private String body;
 
     public DataSourcePackFormatter() {
-        this(false, "#", "");
+        this(false);
     }
 
-    public DataSourcePackFormatter(Boolean showBody, String body, String event) {
+    public DataSourcePackFormatter(Boolean showBody) {
         this.showBody = showBody;
-        this.body = body;
     }
 
     private String $(String format, Object... args) {
@@ -45,9 +40,4 @@ public class DataSourcePackFormatter implements ExchangeFormatter {
                 ofNullable(e.getProperty("X-Event-Desc", String.class)).orElse(""),
                 showBody ? $("Body %s", valueOf(e.getIn().getBody())) : "");
     }
-
-    public void setShowBody(Boolean showBody) {
-        this.showBody = showBody;
-    }
-
 }
