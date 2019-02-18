@@ -69,7 +69,7 @@ public class Data {
     }
 
     public String pathOn(String first) {
-        return $("%s/%s", first, path());
+        return $("%s%s", first, path());
     }
 
     @Deprecated
