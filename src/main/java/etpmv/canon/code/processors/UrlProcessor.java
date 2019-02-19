@@ -57,6 +57,7 @@ public class UrlProcessor {
         this.form = url.replaceAll(regex, "$3").replace(url,"");
         this.version = url.replaceAll(regex, "$4").replace(url,"");
         this.subscriber = url.replaceAll(regex, "$5").replace(url,"");
+        this.subscribers = new ArrayList<>();
     }
 
     private String $(String format, Object... args) {

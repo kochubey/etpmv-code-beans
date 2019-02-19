@@ -73,7 +73,7 @@ public class Data {
     }
 
     public boolean isAuthorizedOn(String pts, String url) {
-        List<String> subs = new ArrayList<>(new UrlProcessor(url).subscribers());
+        List<String> subs = new ArrayList<>(new UrlProcessor(url, this).subscribers());
         subs.add("shod");
         subs.add(issuer);
         return subs.contains(String.valueOf(pts));
