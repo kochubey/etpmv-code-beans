@@ -40,4 +40,8 @@ public class DataSourcePackFormatter implements ExchangeFormatter {
                 ofNullable(e.getProperty("X-Event-Desc", String.class)).orElse(""),
                 showBody ? $("Body %s", valueOf(e.getIn().getBody())) : "");
     }
+
+    public void setShowBody(Boolean showBody) {
+        this.showBody = showBody;
+    }
 }
