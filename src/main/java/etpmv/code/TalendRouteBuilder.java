@@ -20,11 +20,17 @@ public abstract class TalendRouteBuilder extends RouteBuilder {
         return format(format, args);
     }
 
+
     @Override
     public void configure() throws Exception {
-        doConfig();
+    onExceptions();
+    doConfig();
 //        configRegistry(registry);
     }
+
+    public void onExceptions(){
+
+    };
 
     public void doConfig() throws Exception {
 //        final CamelContext camelContext = getContext();
