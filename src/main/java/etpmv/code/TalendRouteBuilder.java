@@ -2,9 +2,7 @@ package etpmv.code;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.impl.CompositeRegistry;
 import org.apache.camel.impl.DefaultCamelContext;
-import org.apache.camel.impl.SimpleRegistry;
 import org.apache.camel.main.Main;
 import org.apache.camel.management.JmxNotificationEventNotifier;
 import org.apache.camel.spring.SpringCamelContext;
