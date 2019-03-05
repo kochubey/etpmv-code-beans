@@ -1,28 +1,31 @@
-package ru.efive.esb.webconfig.utils;
+package etpmv.canon.code.processors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
-@Component
-public class DatasourceUtils {
+public class DatasourceProcessor {
+    FileProcessor fileProcessor = new FileProcessor();
 
-    private final ResourceUtils resourceUtils;
-
-    @Autowired
-    public DatasourceUtils(ResourceUtils resourceUtils) {
-        this.resourceUtils = resourceUtils;
+    public DatasourceProcessor() {
+        this.fileProcessor = fileProcessor;
     }
 
+    public String getDatasource(String ptsId, String dtsId, String dtsVersion) throws IOException {
+        return fileProcessor.getFileContent("body.xsd",  ptsId, dtsId, dtsVersion);
+    }
+
+
     public List<String> getPtsList() {
-        return resourceUtils.getList("");
+        return fileProcessor.getList("");
     }
 
     public List<String> getDtsList(String ptsId) {
-        return resourceUtils.getList(ptsId, "");
+        return fileProcessor.getList(ptsId, "");
     }
 
     public List<String> getAllDtsList() {
@@ -35,10 +38,10 @@ public class DatasourceUtils {
     }
 
     public List<String> getDtsVersions(String ptsId, String dtsId) {
-        return resourceUtils.getList(ptsId, dtsId);
+        return fileProcessor.getList(ptsId, dtsId);
     }
 
     public List<String> getSubscribers(String ptsId, String dtsId, String dtsVersion) {
-        return resourceUtils.getList(ptsId, dtsId, dtsVersion, "");
+        return fileProcessor.getList(ptsId, dtsId, dtsVersion, "");
     }
 }

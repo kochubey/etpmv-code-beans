@@ -1,8 +1,9 @@
-package etpmv.routes.canon.utils;
+package etpmv.canon.code.processors;
 
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ReadContext;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,17 +11,19 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.Objects;
 
 import static java.lang.String.format;
 
-public class FileResourceUtils {
+public class FileProcessor {
 
     private final String filterFileName = "filter.xml";
     private final String datasourceFileLocation = "DSE/urn/pts/%s/dts/%s/%s";
     private final String datasourceVersionFileLocation = "DSE/urn/pts/%s/dts/%s";
     private final String subscribersFileLocation = "DSE/urn/pts/%s/dts/%s/%s/subscribers/%s";
     private final String ptsFileLocation = "DSE/urn/pts/%s";
-    private final String webConfigFileLocation = "src/main/resources/DSEfiles";
+    //private final String webConfigFileLocation = Objects.requireNonNull(getClass().getClassLoader().getResource("./resources/DSEfiles")).getPath();
+    private final String webConfigFileLocation = "DSEfiles";
 
     private String getFilePath(String ptsName, String dtsName, String dtsVersion, String subscriberName) {
         String filePath;
