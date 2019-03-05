@@ -23,6 +23,7 @@ public class MultipartProcessor {
         String body = in.getBody(String.class);
         String xExchangeId = in.getHeader("X-Exchange-Id", String.class);
         String xAttachName = in.getHeader("X-Attach-Name", String.class);
+        String xAttachType = in.getHeader("X-Attach-Type", String.class);
         String xMessageType = in.getHeader("X-Message-Type", String.class);
 
         MultipartEntityBuilder builder = MultipartEntityBuilder.create()
@@ -32,7 +33,7 @@ public class MultipartProcessor {
             File file = new File(format("%1$s%2$s", "./data/tmp/files/", xExchangeId));
             if (file.isFile()) {
                 builder.addPart("AttachedField", new FileBody(file
-                        , create(ContentType.APPLICATION_OCTET_STREAM.getMimeType(), "UTF-8")
+                        , create(xAttachType, "UTF-8")
                         , ofNullable(xAttachName).orElse(file.getName()))
                 );
             }
