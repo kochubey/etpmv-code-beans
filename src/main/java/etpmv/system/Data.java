@@ -180,8 +180,8 @@ public class Data {
     }
 
     public boolean isReleasedOn(String url) throws IOException {
-        HttpURLConnection con = (HttpURLConnection) new URL(pathOn(url) + "/body.xsd").openConnection();
-        con.setRequestMethod("HEAD");
+        HttpURLConnection con = (HttpURLConnection) new URL(pathOn(url) + "body.xsd").openConnection();
+        con.setRequestMethod("GET");
         int responseCode = con.getResponseCode();
         con.disconnect();
         return (responseCode == HTTP_OK);
