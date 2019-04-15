@@ -6,6 +6,8 @@ import org.apache.camel.NoTypeConversionAvailableException;
 import org.apache.camel.TypeConversionException;
 import org.apache.camel.TypeConverter;
 
+import java.util.Map;
+
 public class JsonToMapConverter implements TypeConverter {
     @Override
     public boolean allowNull() {
