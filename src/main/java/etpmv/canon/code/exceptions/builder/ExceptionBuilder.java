@@ -1,6 +1,7 @@
 package etpmv.canon.code.exceptions.builder;
 
 import etpmv.canon.code.exceptions.EtpmvException;
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 
 public class ExceptionBuilder {
@@ -13,7 +14,8 @@ public class ExceptionBuilder {
                 .routeId("Exception")
                 .setProperty("X-Err-Code").constant("1020")
                 .setProperty("X-Err-Result").constant("Ошибка ПТС ШОД. Обратитесь в службу технической поддержки.")
-                .setProperty("X-Err-Desc").simple("${exception.stacktrace}")
+                .setProperty("X-Err-Desc").simple("${exception.message}")
+                .log(LoggingLevel.ERROR, "${exception.stacktrace}")
                 .to("direct:toBkQueue");
 
         routeBuilder.onException(EtpmvException.class)

@@ -13,4 +13,7 @@ public class Headers {
 
     public static final String MESSAGE_PART_TEXT = "MessageText";
     public static final String MESSAGE_PART_BINARY = "AttachedField";
+
+    public static final String REQUEST_ID_SRC = "urn:pts:shod:src-";
+    public static final String REQUEST_ID_SUB = "urn:pts:shod:sub-";
 }

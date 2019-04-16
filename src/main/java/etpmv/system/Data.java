@@ -32,7 +32,6 @@ public class Data {
     private String subscriber;
     private List<String> subscribers;
 
-    private static final String REQUEST_ID_SRC = "urn:pts:shod:src-";
     private static final String URN_PTS = "^urn:pts:(.*):(.*)$";
     private static final String URN_DTS = "^urn://dts/(.*)/(.*)/(.*)$";
     private static final String SHOD = "shod";
