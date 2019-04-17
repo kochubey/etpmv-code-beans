@@ -101,8 +101,8 @@ public class DatasourceProcessor {
             filterBody = fileProcessor.getFileContent(FILTER_XML, ptsId, dtsId,dtsVersion, subscriber);
         } catch (IOException ignored) {
         }
-        if (filterBody != null) return String.format(filterBody, LocalDate.now());
-        return null;
+
+        return filterBody;
     }
 
     public String getWebConfigFileLocation() {

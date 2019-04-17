@@ -16,10 +16,10 @@ import static java.lang.String.format;
 // todo нужно избавляться от datasourceUrl в методах
 // example http://localhost:8080/DSE/urn/pts/uzd44/dts/contract/v1.0.1/subscribers/pcp/endpoint
 public class UrlProcessor {
-    private final String regex = "^(.*)/DSE/urn/pts/(.*)/dts/(.*)/(.*)/subscribers/(.*)/endpoint";
-    private final String iss_point = "%s/DSE/urn/pts/%s/endpoint";
-    private final String sub_point = "%s/DSE/urn/pts/%s/dts/%s/%s/subscribers/%s/endpoint";
-    private final String all_subs = "%s/api/subscribersList?ptsId=%s&dtsId=%s&version=%s";
+    private final static String regex = "^(.*)/DSE/urn/pts/(.*)/dts/(.*)/(.*)/subscribers/(.*)/endpoint";
+    private final static String iss_point = "%s/DSE/urn/pts/%s/endpoint";
+    private final static String sub_point = "%s/DSE/urn/pts/%s/dts/%s/%s/subscribers/%s/endpoint";
+    private final static String all_subs = "%s/api/subscribersList?ptsId=%s&dtsId=%s&version=%s";
 
     private String host;
     private String issuer;
@@ -28,11 +28,11 @@ public class UrlProcessor {
     private String subscriber;
     private List<String> subscribers;
 
-    public static void main(String[] args) {
-        UrlProcessor processor = new UrlProcessor("http://localhost:8080/");
-        System.out.println(processor.getIssuerPath());
-        System.out.println(processor.getIssuerEndpoint());
-    }
+//    public static void main(String[] args) {
+//        UrlProcessor processor = new UrlProcessor("http://localhost:8080/");
+//        System.out.println(processor.getIssuerPath());
+//        System.out.println(processor.getIssuerEndpoint());
+//    }
 
     public UrlProcessor(String host, String issuer, String form, String version, String subscriber) {
         this.host = host;
