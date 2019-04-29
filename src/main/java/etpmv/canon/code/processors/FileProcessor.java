@@ -4,6 +4,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ReadContext;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -53,7 +54,7 @@ public class FileProcessor {
     public String getFileContent(String fileName, String ptsId, String dtsId, String dtsVersion, String subscriberId) throws IOException {
         String filePath = getFilePath(ptsId, dtsId, dtsVersion, subscriberId);
         Path path = (filePath == null) ? Paths.get(webConfigFileLocation, fileName) : Paths.get(webConfigFileLocation, filePath, fileName);
-        return new String(Files.readAllBytes(path));
+        return String.join("", Files.readAllLines(path, Charset.forName("UTF-8")));
     }
 
     public String getFileContent(String fileId, String ptsId, String dtsId, String dtsVersion) throws IOException {
