@@ -53,10 +53,10 @@ public class UrlProcessor {
 
     public UrlProcessor(String url) {
         this.host = url.replaceAll(regex, "$1");
-        this.issuer = url.replaceAll(regex, "$2").replace(url,"");
-        this.form = url.replaceAll(regex, "$3").replace(url,"");
-        this.version = url.replaceAll(regex, "$4").replace(url,"");
-        this.subscriber = url.replaceAll(regex, "$5").replace(url,"");
+        this.issuer = url.replaceAll(regex, "$2").replace(url, "");
+        this.form = url.replaceAll(regex, "$3").replace(url, "");
+        this.version = url.replaceAll(regex, "$4").replace(url, "");
+        this.subscriber = url.replaceAll(regex, "$5").replace(url, "");
         this.subscribers = new ArrayList<>();
     }
 
@@ -72,13 +72,13 @@ public class UrlProcessor {
         }
     }
 
-    public List<String> subscribers(){
-            return this.subscribers = (subscribers.size() > 0) ? subscribers :
-                    getListFromJsonByUrl($(all_subs, host, issuer, form, version));
+    public List<String> subscribers() {
+        return this.subscribers = (subscribers.size() > 0) ? subscribers :
+                getListFromJsonByUrl($(all_subs, host, issuer, form, version));
     }
 
     public String getIssuerPath() {
-        return $(iss_point, host, issuer);
+        return $(iss_point, host, issuer + "/dts/" + form + "/" + version);
     }
 
     public String getIssuerEndpoint() {
