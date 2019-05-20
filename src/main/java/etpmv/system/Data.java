@@ -30,7 +30,6 @@ public class Data {
     private String requester;
     private String responser;
     private String subscriber;
-    private List<String> subscribers;
 
     private static final String URN_PTS = "^urn:pts:(.*):(.*)$";
     private static final String URN_DTS = "^urn://dts/(.*)/(.*)/(.*)$";
@@ -60,7 +59,6 @@ public class Data {
         this.responser = ofNullable(message.getHeader(RESPONSE_ID, String.class)).orElse("")
                 .replaceAll(URN_PTS, "$1");
         this.subscriber = computeSubscriber();
-        this.subscribers = new ArrayList<>();
     }
 
     private String computeSubscriber() {
@@ -117,8 +115,6 @@ public class Data {
 
     public String exchangeId() { return exchangeId;}
 
-    public String targetPts() { return targetPts;}
-
     public Integer seqNum() { return seqNum;}
 
     public Boolean isLast() { return isLast;}
@@ -147,12 +143,24 @@ public class Data {
         return subscriber;
     }
 
+    public String requestUuid() {
+        return requestId.substring(requestId.lastIndexOf(":"));
+    }
+
     public String path() {
         return $("/DSE/urn/pts/%s/dts/%s/%s/", issuer, form, version);
     }
 
-    public String pathOn(String first) {
+    private String pathOn(String first) {
         return $("%s%s", first, path());
+    }
+
+    private String ftpPath() {
+        return $("/%s/%s/%s/%s/", issuer, form, version, requestUuid());
+    }
+
+    public String ftpPathOn(String first) {
+        return $("%s%s", first, ftpPath());
     }
 
     public boolean isAuthorizedOn(String pts, String url) {
