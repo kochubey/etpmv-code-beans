@@ -144,7 +144,7 @@ public class Data {
     }
 
     public String requestUuid() {
-        return requestId.substring(requestId.lastIndexOf(":"));
+        return requestId.substring(requestId.lastIndexOf(":")+1);
     }
 
     public String path() {
@@ -153,14 +153,6 @@ public class Data {
 
     private String pathOn(String first) {
         return $("%s%s", first, path());
-    }
-
-    private String ftpPath() {
-        return $("/%s/%s/%s/%s/", issuer, form, version, requestUuid());
-    }
-
-    public String ftpPathOn(String first) {
-        return $("%s%s", first, ftpPath());
     }
 
     public boolean isAuthorizedOn(String pts, String url) {

@@ -41,7 +41,7 @@ public class MultipartProcessor {
                 .addTextBody("MessageText", body, create(xMessageType, "UTF-8"));
 
         if (in.getHeader("X-On-FTP") != null) {
-            retriveFromFtp(exchange, builder);
+            receiveFromFtp(exchange, builder);
         }else if (xExchangeId != null) {
             File file = new File(format("%1$s%2$s", "./data/tmp/files/", xExchangeId));
             if (file.isFile()) {
@@ -57,7 +57,7 @@ public class MultipartProcessor {
         in.setBody(resultEntity);
     }
 
-    private void retriveFromFtp(Exchange exchange, MultipartEntityBuilder builder) throws Exception {
+    private void receiveFromFtp(Exchange exchange, MultipartEntityBuilder builder) throws Exception {
         Data data = new Data(exchange);
         CamelContext context = exchange.getContext();
         FTPClient ftpClient = new FTPClient();
@@ -95,9 +95,16 @@ public class MultipartProcessor {
 
                 builder.addBinaryBody("AttachedField", baos.toByteArray(), ContentType.create("application/zip", Charset.forName("UTF-8")),
                         String.format("%s.zip", data.requestUuid()));
+            }else{
+                System.out.println("Didn't changed working directory");
             }
         } catch (IOException e) {
             throw new EtpmvException("1020", "Ошибка при получении файлов с FTP-сервера", e.getLocalizedMessage());
+        }finally {
+            if (ftpClient.isConnected()) {
+                ftpClient.logout();
+                ftpClient.disconnect();
+            }
         }
     }
 }
