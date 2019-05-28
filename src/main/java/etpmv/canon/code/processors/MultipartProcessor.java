@@ -1,6 +1,5 @@
 package etpmv.canon.code.processors;
 
-import etpmv.canon.code.exceptions.EtpmvException;
 import etpmv.system.Data;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
@@ -16,7 +15,6 @@ import org.apache.http.entity.mime.content.FileBody;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.zip.ZipEntry;
@@ -40,7 +38,7 @@ public class MultipartProcessor {
         MultipartEntityBuilder builder = MultipartEntityBuilder.create()
                 .addTextBody("MessageText", body, create(xMessageType, "UTF-8"));
 
-        if (in.getHeader("X-On-FTP") != null) {
+        if (in.getHeader("X-On-FTP") != null && in.getHeader("X-Response-Id", String.class) == null) {
             receiveFromFtp(exchange, builder);
         }else if (xExchangeId != null) {
             File file = new File(format("%1$s%2$s", "./data/tmp/files/", xExchangeId));
@@ -76,7 +74,7 @@ public class MultipartProcessor {
                         ZipEntry zipEntry = new ZipEntry(file.getName());
                         zipEntry.setSize(file.getSize());
                         zos.putNextEntry(zipEntry);
-                        try(InputStream fis = ftpClient.retrieveFileStream(file.getName())) {
+                        try (InputStream fis = ftpClient.retrieveFileStream(file.getName())) {
 
                             int length;
                             while ((length = fis.read(buffer)) > 0) {
@@ -85,21 +83,15 @@ public class MultipartProcessor {
 
                             ftpClient.completePendingCommand();
                             zos.closeEntry();
-                        }catch (IOException e) {
-                            throw new EtpmvException("1020", "Ошибка при получении файлов с FTP-сервера", e.getLocalizedMessage());
                         }
                     }
+
+                    zos.close();
+
+                    builder.addBinaryBody("AttachedField", baos.toByteArray(), ContentType.create("application/zip", Charset.forName("UTF-8")),
+                            String.format("%s.zip", data.requestUuid()));
                 }
-
-                zos.close();
-
-                builder.addBinaryBody("AttachedField", baos.toByteArray(), ContentType.create("application/zip", Charset.forName("UTF-8")),
-                        String.format("%s.zip", data.requestUuid()));
-            }else{
-                System.out.println("Didn't changed working directory");
             }
-        } catch (IOException e) {
-            throw new EtpmvException("1020", "Ошибка при получении файлов с FTP-сервера", e.getLocalizedMessage());
         }finally {
             if (ftpClient.isConnected()) {
                 ftpClient.logout();
