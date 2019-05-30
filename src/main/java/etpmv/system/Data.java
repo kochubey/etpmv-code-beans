@@ -73,7 +73,7 @@ public class Data {
 
     private String subscriberForResponse() {
         //Это ответ на рассылку или на запрос от ШОД
-        if (issuer.equals(requester) || requester.equals(SHOD)) {
+        if (issuer.equals(requester) || requester.contains(SHOD)) {
             return responser;
         } else {
             //Это ответ от источника подписанту
@@ -83,7 +83,7 @@ public class Data {
 
     private String subscriberForRequest() {
         //Запрос от ШОД
-        if (requester.equals(SHOD)) {
+        if (requester.contains(SHOD)) {
             //Запрос от ШОД к источнику ВС
             if (requestId.startsWith(REQUEST_ID_SRC)) {
                 return issuer;

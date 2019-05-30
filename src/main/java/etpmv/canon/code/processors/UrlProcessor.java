@@ -28,12 +28,6 @@ public class UrlProcessor {
     private String subscriber;
     private List<String> subscribers;
 
-//    public static void main(String[] args) {
-//        UrlProcessor processor = new UrlProcessor("http://localhost:8080/");
-//        System.out.println(processor.getIssuerPath());
-//        System.out.println(processor.getIssuerEndpoint());
-//    }
-
     public UrlProcessor(String host, String issuer, String form, String version, String subscriber) {
         this.host = host;
         this.issuer = issuer;
@@ -44,7 +38,7 @@ public class UrlProcessor {
     }
 
     public UrlProcessor(String host, Data data) {
-        this(host, data.issuer(), data.form(), data.version(), data.requester());
+        this(host, data.issuer(), data.form(), data.version(), data.subscriber());
     }
 
     public UrlProcessor(String host, Data data, String subscriber) {
