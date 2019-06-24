@@ -38,7 +38,7 @@ public class MultipartProcessor {
         MultipartEntityBuilder builder = MultipartEntityBuilder.create()
                 .addTextBody("MessageText", body, create(xMessageType, "UTF-8"));
 
-        if (in.getHeader("X-On-FTP") != null && in.getHeader("X-Response-Id", String.class) == null) {
+        if (in.getHeader("X-On-FTP") != null) {
             receiveFromFtp(exchange, builder);
         }else if (xExchangeId != null) {
             File file = new File(format("%1$s%2$s", "./data/tmp/files/", xExchangeId));
@@ -85,13 +85,12 @@ public class MultipartProcessor {
                             zos.closeEntry();
                         }
                     }
-
-                    zos.close();
-
-                    builder.addBinaryBody("AttachedField", baos.toByteArray(), ContentType.create("application/zip", Charset.forName("UTF-8")),
-                            String.format("%s.zip", data.requestUuid()));
                 }
             }
+            zos.close();
+
+            builder.addBinaryBody("AttachedField", baos.toByteArray(), ContentType.create("application/zip", Charset.forName("UTF-8")),
+                    String.format("%s.zip", data.requestUuid()));
         }finally {
             if (ftpClient.isConnected()) {
                 ftpClient.logout();
