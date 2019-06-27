@@ -16,6 +16,7 @@ import org.apache.http.entity.mime.content.FileBody;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -43,6 +44,7 @@ public class MultipartProcessor {
         }else if (xExchangeId != null) {
             File file = new File(format("%1$s%2$s", "./data/tmp/files/", xExchangeId));
             if (file.isFile()) {
+                xAttachName = URLDecoder.decode(xAttachName, "UTF-8");
                 builder.addPart("AttachedField", new FileBody(file
                         , create(xAttachType, "UTF-8")
                         , ofNullable(xAttachName).orElse(file.getName()))
