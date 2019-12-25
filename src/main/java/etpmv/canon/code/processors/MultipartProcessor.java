@@ -10,14 +10,14 @@ import org.apache.commons.net.ftp.FTPFile;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.FileBody;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URLDecoder;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -37,7 +37,8 @@ public class MultipartProcessor {
         String xMessageType = in.getHeader("X-Message-Type", String.class);
 
         MultipartEntityBuilder builder = MultipartEntityBuilder.create()
-                .addTextBody("MessageText", body, create(xMessageType, "UTF-8"));
+                .addTextBody("MessageText", body, create(xMessageType, "UTF-8"))
+                .setMode(HttpMultipartMode.RFC6532);
 
         if (in.getHeader("X-On-FTP") != null) {
             receiveFromFtp(exchange, builder);
@@ -45,10 +46,14 @@ public class MultipartProcessor {
             File file = new File(format("%1$s%2$s", "./data/tmp/files/", xExchangeId));
             if (file.isFile()) {
                 xAttachName = URLDecoder.decode(xAttachName, "UTF-8");
-                builder.addPart("AttachedField", new FileBody(file
-                        , create(xAttachType, "UTF-8")
-                        , ofNullable(xAttachName).orElse(file.getName()))
-                );
+                System.out.println("MultipartProcessor incoming Content-Type: " + xAttachType);
+                if(xAttachType==null || xAttachType.equals(""))
+                    xAttachType="application/octet-stream";
+                else if(xAttachType.contains(";"))
+                    xAttachType=xAttachType.split(";")[0];
+                builder.addBinaryBody("AttachedField", file, create(xAttachType, "UTF-8"),
+                        ofNullable(xAttachName).orElse(file.getName()));
+                System.out.println("MultipartProcessor outgoing Content-Type: " + xAttachType);
             }
         }
 
@@ -91,7 +96,7 @@ public class MultipartProcessor {
             }
             zos.close();
 
-            builder.addBinaryBody("AttachedField", baos.toByteArray(), ContentType.create("application/zip", Charset.forName("UTF-8")),
+            builder.addBinaryBody("AttachedField", baos.toByteArray(), ContentType.create("application/zip", StandardCharsets.UTF_8),
                     String.format("%s.zip", data.requestUuid()));
         }finally {
             if (ftpClient.isConnected()) {

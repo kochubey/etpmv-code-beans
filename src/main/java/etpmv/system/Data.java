@@ -178,6 +178,12 @@ public class Data {
         return !requester.isEmpty() && !responser.isEmpty() && !issuer.equals(requester);
     }
 
+    public boolean isNotSchedulerSub() {
+        return !this.requestId.startsWith(Headers.REQUEST_ID_SUB);
+    }
+
+    public boolean isResponserAck() { return requestId.equals(responseId);}
+
     public boolean isReleasedOn(String url) throws IOException {
         HttpURLConnection con = (HttpURLConnection) new URL(pathOn(url) + "body.xsd").openConnection();
         con.setRequestMethod("GET");
