@@ -4,7 +4,6 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ReadContext;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,7 +16,6 @@ import static java.lang.String.format;
 
 public class FileProcessor {
 
-    public static final String ENDPOINT_JSON = "endpoint.json";
     private static final String DTS = "DSE/urn/pts/%s/dts/%s/%s";
     private static final String DTS_VERSION = "DSE/urn/pts/%s/dts/%s";
     private static final String SUBSCRIBERS = "DSE/urn/pts/%s/dts/%s/%s/subscribers/%s";
@@ -88,20 +86,10 @@ public class FileProcessor {
         return this.getList(ptsId, null, null);
     }
 
-    public String getEndpointUrlFromJson(String ptsId) throws IOException {
-        return this.getEndpointUrlFromJson(ptsId, null, null, null);
-    }
-
-    public String getEndpointUrlFromJson(String ptsId, String dtsId, String dtsVersion) throws IOException {
-        return this.getEndpointUrlFromJson(ptsId, dtsId, dtsVersion, null);
-    }
-
-    public String getEndpointUrlFromJson(String ptsId, String dtsId, String dtsVersion, String subscriberId) throws IOException {
-        String fileContent = this.getFileContent(ENDPOINT_JSON, ptsId, dtsId, dtsVersion, subscriberId);
-
+    public static String getEndpointUrlFromJson(String fileContent) {
         ReadContext ctx = JsonPath.parse(fileContent);
         String targetUrl = ctx.read("$.servers[0].url");
-        LinkedHashMap targetPath = ctx.read("$.paths");
+        LinkedHashMap<String, String> targetPath = ctx.read("$.paths");
         return format("%s%s", targetUrl, targetPath.keySet().iterator().next());
     }
 

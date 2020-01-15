@@ -4,7 +4,8 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>etpmv.code</groupId>
     <artifactId>beans</artifactId>
-    <version>1.0.1</version>
+    <version>4.1.9</version>
+    <packaging>bundle</packaging>
     <name>ETPMV :: Code :: Beans</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -85,5 +86,35 @@
             <version>2.20.1</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>4.2.1</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                        <configuration>
+                            <excludeDependencies>true</excludeDependencies>
+                            <instructions>
+                                <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
+                                <Bundle-Name>ETPMV :: Code :: Beans</Bundle-Name>
+                                <Bundle-SymbolicName>etpmv-code-beans</Bundle-SymbolicName>
+                                <Bundle-Version>4.1.9</Bundle-Version>
+                                <Export-Package>*</Export-Package>
+                                <Import-Package>org.hibernate.proxy,javassist.util.proxy,*</Import-Package>
+                            </instructions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
 
