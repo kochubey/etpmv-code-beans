@@ -11,8 +11,10 @@ import javax.persistence.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class DbDatasourceProcessor extends DatasourceProcessor {
@@ -28,7 +30,11 @@ public class DbDatasourceProcessor extends DatasourceProcessor {
                 "from DataType dt " +
                 "inner join dt.abonent a " +
                 "where a.code='" + ptsId + "' and dt.code='" + dtsId + "' and dt.version='" + dtsVersion + "'");
-        DataType dataType = (DataType) query.getSingleResult();
+        DataType dataType = null;
+        try {
+            dataType = (DataType) query.getSingleResult();
+        } catch (NoResultException ignored) {
+        }
         entityManager.close();
         if (dataType == null)
             throw new DataNotFoundException(String.format("Отсутсвует ВС urn://dts/%s/%s/%s", ptsId, dtsId, dtsVersion));
@@ -43,8 +49,11 @@ public class DbDatasourceProcessor extends DatasourceProcessor {
                 "inner join dt.abonent a " +
                 "inner join sub.abonent sub_a " +
                 "where sub_a.code='" + subscriberId + "' and dt.code='" + dtsId + "' and dt.version='" + dtsVersion + "' and a.code='" + ptsId + "'");
-
-        Subscriber subscriber = (Subscriber) query.getSingleResult();
+        Subscriber subscriber = null;
+        try {
+            subscriber = (Subscriber) query.getSingleResult();
+        } catch (NoResultException ignored) {
+        }
         entityManager.close();
         if (subscriber == null)
             throw new DataNotFoundException(String.format("Не найден подписант для ВС urn://dts/%s/%s/%s с id %s", ptsId, dtsId, dtsVersion, subscriberId));
@@ -71,7 +80,11 @@ public class DbDatasourceProcessor extends DatasourceProcessor {
         Query query = entityManager.createQuery("select a " +
                 "from Abonent a " +
                 "where a.code='" + ptsId + "'");
-        Abonent abonent = (Abonent) query.getSingleResult();
+        Abonent abonent = null;
+        try {
+            abonent = (Abonent) query.getSingleResult();
+        } catch (NoResultException ignored) {
+        }
         entityManager.close();
         if (abonent == null) throw new DataNotFoundException("Отсутствует ПТС с id " + ptsId);
 
@@ -129,12 +142,11 @@ public class DbDatasourceProcessor extends DatasourceProcessor {
     public List<String> ptsList() {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         TypedQuery<Abonent> query = entityManager.createQuery("select a from Abonent a", Abonent.class);
-        List<Abonent> abonents = query.getResultList();
-        entityManager.close();
-        return abonents.stream()
-                .map(Abonent::getCode)
-                .collect(Collectors.toList());
 
+        List<String> ptsList = queryResultList(query, Abonent::getCode);
+        entityManager.close();
+
+        return ptsList;
     }
 
     public List<String> dtsList(String ptsId) {
@@ -149,11 +161,10 @@ public class DbDatasourceProcessor extends DatasourceProcessor {
                     "where a.code='" + ptsId + "'", DataType.class);
         }
 
-        List<DataType> dataTypes = query.getResultList();
+        List<String> dtsList = queryResultList(query, DataType::getCode);
         entityManager.close();
-        return dataTypes.stream()
-                .map(DataType::getCode)
-                .collect(Collectors.toList());
+
+        return dtsList;
     }
 
     public List<String> dtsVersions(String ptsId, String dtsId) {
@@ -163,10 +174,22 @@ public class DbDatasourceProcessor extends DatasourceProcessor {
                 "inner join dt.abonent a " +
                 "where dt.code='" + dtsId + "' and a.code='" + ptsId + "'", DataType.class);
 
-        List<DataType> dataTypes = query.getResultList();
+        List<String> dtsVersions = queryResultList(query, DataType::getVersion);
         entityManager.close();
-        return dataTypes.stream()
-                .map(DataType::getVersion)
+
+        return dtsVersions;
+    }
+
+    private <T> List<String> queryResultList(TypedQuery<T> query, Function<T, String> mapperFunction) {
+        List<T> results = null;
+        try {
+            results = query.getResultList();
+        } catch (NoResultException ignored) {
+        }
+
+        if (results == null) return new ArrayList<>();
+        return results.stream()
+                .map(mapperFunction)
                 .collect(Collectors.toList());
     }
 
